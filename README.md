@@ -4,7 +4,7 @@ Docker stack for torrenting and usenet
 
 ## Description
 
-A fullstack docker setup to download torrents and nzb, while protecting the stack behind an openvpn client
+A fullstack docker setup to download torrents and usenet, while protecting the stack behind an openvpn client
 
 * Gluetun - Lightweight swiss-knife-like VPN client to multiple VPN service providers
 * Deluge -  Lightweight, Free Software, cross-platform BitTorrent client.
