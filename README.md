@@ -12,7 +12,7 @@ Clone this repo, edit the env file, launch you stack
 
 ### Dependencies
 
-* Docker
+* Docker Host - Linux
 * OpenVPN conf file
 * CIFS share for media
 
