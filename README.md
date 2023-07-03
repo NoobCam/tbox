@@ -17,7 +17,7 @@ A fullstack docker setup to download torrents and nzb, while protecting the stac
 ### Dependencies
 
 * Docker Host - Linux
-* OpenVPN conf file
+* OpenVPN conf file - username and password
 * CIFS share for media
 
 ## Getting Started
