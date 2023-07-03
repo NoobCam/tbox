@@ -1,12 +1,5 @@
 version: "3.3"
 
-volumes: 
-  media_drive:
-    driver_opts:
-      type: cifs 
-      o: username=${MEDIA_DRIVE_USERNAME},password=${MEDIA_DRIVE_PASSWORD},uid=${USER_PUID},gid=${USER_PGID},vers=3.0
-      device: ${MEDIA_DRIVE_URL}
-
 networks:
   gluetun-network:
     ipam:
