@@ -14,11 +14,6 @@ A fullstack docker setup to download torrents and usenet, while protecting the s
 * Prowler - Indexer manager/proxy to integrate with your various PVR apps.
 * Jellyfin - Volunteer-built media solution
 
-### Dependencies
-
-* Docker
-* OpenVPN 
-
 ## Getting Started
 
 * Clone this repo
