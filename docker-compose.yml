@@ -206,7 +206,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      - JELLYFIN_PublishedServerUrl=172.16.1.135 #optional
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL}
     volumes:
       - ${TBOX_CONFIG}/tools/jellyfin:/config
       - ${TBOX_STORAGE}/data/media:/data/media
