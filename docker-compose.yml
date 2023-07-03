@@ -1,0 +1,228 @@
+version: "3.2"
+
+volumes: 
+  media_drive:
+    driver_opts:
+      type: cifs 
+      o: username=${MEDIA_DRIVE_USERNAME},password=${MEDIA_DRIVE_PASSWORD},uid=${USER_PUID},gid=${USER_PGID},vers=3.0
+      device: ${MEDIA_DRIVE_URL}
+
+networks:
+  gluetun-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.224.0/24    
+
+services:
+
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - TZ=${TIMEZONE}
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=openvpn
+      - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
+      - OPENVPN_USER=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - HTTPPROXY=on
+      - HTTPPROXY_USER=${HTTPPROXY_USER}
+      - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
+    volumes:
+      - ${OPENVPN_CONF}:/gluetun/custom.conf:ro
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      # Deluge
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+      # nzbget
+      - 6789:6789
+      # Radar
+      - 7878:7878
+      # Sonar
+      - 8989:8989
+      # Prowler
+      - 9696:9696
+      # Jellyfin
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    networks:
+      gluetun-network:
+        ipv4_address: 192.168.224.2
+    restart: unless-stopped
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - DELUGE_LOGLEVEL=error #optional
+      - UMASK=002
+      # themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
+      - TP_THEME=dracula
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/deluge:/config
+      # Storage dirs
+      - ${TBOX_STORAGE}/data/torrents:/data/torrents
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nzbget:
+    image: lscr.io/linuxserver/nzbget:latest
+    container_name: nzbget
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+    # - NZBGET_USER=nzbget #optional
+    # - NZBGET_PASS=tegbzn6789 #optional
+      # themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:nzbget
+      - TP_THEME=dracula
+    volumes:
+      - ${TBOX_CONFIG}/tools/nzbget:/config
+      - ${TBOX_STORAGE}/data/usenet:/data/usenet
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped  
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      # themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
+      - TP_THEME=dracula
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/radarr:/config
+      # Storage dirs
+      - ${TBOX_STORAGE}/data:/data
+    # ports:
+    #   # Radarr Web UI port
+    #   - 7878:7878
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      # themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=dracula
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/sonarr:/config
+      # Storage dir
+      - ${TBOX_STORAGE}/data:/data
+    # ports:
+    #   - 8989:8989
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      # themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr
+      - TP_THEME=dracula
+    volumes:
+      - ${TBOX_CONFIG}/tools/prowlarr:/config
+    # ports:
+    #   - 9696:9696
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+
+# Jellyfin
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      - JELLYFIN_PublishedServerUrl=172.16.1.135 #optional
+    volumes:
+      - ${TBOX_CONFIG}/tools/jellyfin:/config
+      - ${TBOX_STORAGE}/data/media:/data/media
+    # ports:
+    #   - 8096:8096
+    #   - 8920:8920 #optional
+    #   - 7359:7359/udp #optional
+    #   - 1900:1900/udp #optional
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
