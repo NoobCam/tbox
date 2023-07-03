@@ -28,6 +28,12 @@ A fullstack docker setup to download torrents and nzb, while protecting the stac
 * chmod +x all the ```*.sh``` files
 * launch the montior stack  ```./launch-monitor.sh```
 * launch the tbox stack ```./launch-tbox.sh```
+* When configuring the applications (sonarr, radarr, prowler) use the gluetun static IP to setup the apps and download clients
+```
+    networks:
+      gluetun-network:
+        ipv4_address: 192.168.224.2
+```
 
 ## Authors
 
