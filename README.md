@@ -8,7 +8,7 @@ A fullstack docker setup to download torrents and usenet, while protecting the s
 
 * Gluetun - Lightweight swiss-knife-like VPN client to multiple VPN service providers
 * Deluge -  Lightweight, Free Software, cross-platform BitTorrent client.
-* NZBGET - Binary downloader, which downloads files from Usenet 
+* SABnzbd - Free and easy binary newsreader
 * Sonarr - advanced software-based Personal Video Recorder (PVR) for TV shows.
 * Radarr - advanced software-based Personal Video Recorder (PVR) for movies.
 * Prowler - Indexer manager/proxy to integrate with your various PVR apps.
