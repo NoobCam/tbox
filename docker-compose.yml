@@ -21,11 +21,21 @@ services:
       - /dev/net/tun:/dev/net/tun
     environment:
       - TZ=${TIMEZONE}
+      # OPENVPN CONF
+      # - VPN_SERVICE_PROVIDER=custom
+      # - VPN_TYPE=openvpn
+      # - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
+      # - OPENVPN_USER=${OPENVPN_USERNAME}
+      # - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      # WIREGUARD CONF
       - VPN_SERVICE_PROVIDER=custom
-      - VPN_TYPE=openvpn
-      - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
-      - OPENVPN_USER=${OPENVPN_USERNAME}
-      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - VPN_TYPE=wireguard
+      - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
+      - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
+      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      # HTTPPROXY
       - HTTPPROXY=on
       - HTTPPROXY_USER=${HTTPPROXY_USER}
       - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
@@ -72,7 +82,7 @@ services:
       - UMASK=002
       # themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
-      - TP_THEME=dracula
+      - TP_THEME=${TP_THEME}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       # Configuration dir
@@ -84,29 +94,30 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  nzbget:
-    image: lscr.io/linuxserver/nzbget:latest
-    container_name: nzbget
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
     labels:
-      # Enable automatic update with Watchtower
+    # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
     network_mode: "service:gluetun"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
-    # - NZBGET_USER=nzbget #optional
-    # - NZBGET_PASS=tegbzn6789 #optional
+      - UMASK=002
       # themes
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:nzbget
-      - TP_THEME=dracula
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sabnzbd
+      - TP_THEME=${TP_THEME}
     volumes:
-      - ${TBOX_CONFIG}/tools/nzbget:/config
-      - ${TBOX_STORAGE}/data/usenet:/data/usenet
+      - ${TBOX_CONFIG}/tools/sabnzbd:/config
+      - ${TBOX_STORAGE}/data/usenet:/data/usenet #optional
+    #ports:
+    #  - 8080:8080
     depends_on:
       gluetun:
         condition: service_healthy
-    restart: unless-stopped  
+    restart: unless-stopped
 
   radarr:
     image: linuxserver/radarr:latest
@@ -123,7 +134,7 @@ services:
       - UMASK=002
       # themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
-      - TP_THEME=dracula
+      - TP_THEME=${TP_THEME}
     volumes:
       # Sync time with docker host
       - /etc/localtime:/etc/localtime:ro
@@ -153,7 +164,7 @@ services:
       - UMASK=002
       # themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
-      - TP_THEME=dracula
+      - TP_THEME=${TP_THEME}
     volumes:
       # Sync time with docker host
       - /etc/localtime:/etc/localtime:ro
@@ -182,7 +193,7 @@ services:
       - UMASK=002
       # themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr
-      - TP_THEME=dracula
+      - TP_THEME=${TP_THEME}
     volumes:
       - ${TBOX_CONFIG}/tools/prowlarr:/config
     # ports:
