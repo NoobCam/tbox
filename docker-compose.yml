@@ -12,6 +12,8 @@ services:
   traefik:
     image: "traefik"
     container_name: "traefik"
+    log:
+      level: DEBUG
     command:
       - "--log.level=DEBUG"
       #- "--api.insecure=true"
