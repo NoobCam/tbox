@@ -5,29 +5,91 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 192.168.224.0/24    
+        - subnet: 192.168.224.0/24
 
 services:
+
+  traefik:
+    image: "traefik"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      #- "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--api.dashboard=true"
+    labels:
+      # WEB Dashboard
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.tbox.local`)"
+      - "traefik.http.routers.dashboard.service=dashboard@internal"
+      - "traefik.http.routers.dahsboard.entrypoints=web"
+      - "traefik.http.routers.api.rule=Host(`traefik.tbox.local`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=web"
+    ports:
+      - "80:80"
+    networks:
+      gluetun-network:
+        ipv4_address: 192.168.224.3
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
 
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
     labels:
-      # Enable automatic update with Watchtower
+    # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
+      - "traefik.enable=true"
+      #deluge
+      - "traefik.http.routers.deluge.rule=Host(`deluge.tbox.local`)"
+      - "traefik.http.routers.deluge.entrypoints=web"
+      - "traefik.http.routers.deluge.service=deluge"
+      - "traefik.http.services.deluge.loadbalancer.server.port=8112"
+      # sabnzbd
+      - "traefik.http.routers.sabnzbd.rule=Host(`nzb.tbox.local`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=web"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+      #Sonarr
+      - "traefik.http.routers.sonarr.rule=Host(`tv.tbox.local`)"
+      - "traefik.http.routers.sonarr.entrypoints=web"
+      - "traefik.http.routers.sonarr.service=sonarr"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      # radarr
+      - "traefik.http.routers.radarr.rule=Host(`movies.tbox.local`)"
+      - "traefik.http.routers.radarr.entrypoints=web"
+      - "traefik.http.routers.radarr.service=radarr"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      # prowlarr
+      - "traefik.http.routers.prowlarr.rule=Host(`indexer.tbox.local`)"
+      - "traefik.http.routers.prowlarr.entrypoints=web"
+      - "traefik.http.routers.prowlarr.service=prowlarr"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      # jellyfin
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.tbox.local`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.routers.jellyfin.service=jellyfin"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     cap_add:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
     environment:
       - TZ=${TIMEZONE}
-      # OPENVPN CONF
-      # - VPN_SERVICE_PROVIDER=custom
-      # - VPN_TYPE=openvpn
-      # - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
-      # - OPENVPN_USER=${OPENVPN_USERNAME}
-      # - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      # WIREGUARD CONF
+      #OPEN VPN CONFIG
+      #- VPN_SERVICE_PROVIDER=custom
+      #- VPN_TYPE=openvpn
+      #- OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
+      #- OPENVPN_USER=${OPENVPN_USERNAME}
+      #- OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      #WIREGUARD CONFIG
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
@@ -35,13 +97,14 @@ services:
       - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
       - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
       - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      # HTTPPROXY
+      #HTTP PROXY
       - HTTPPROXY=on
       - HTTPPROXY_USER=${HTTPPROXY_USER}
       - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
-    volumes:
-      - ${OPENVPN_CONF}:/gluetun/custom.conf:ro
+    #volumes:
+      #- ${OPENVPN_CONF}:/gluetun/custom.conf:ro
     ports:
+      # Gluetun
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
@@ -49,8 +112,8 @@ services:
       - 8112:8112
       - 6881:6881
       - 6881:6881/udp
-      # sabnzbd
-      - 8080:8080
+      #sabnzbd
+      - 8081:8080
       # Radar
       - 7878:7878
       # Sonar
@@ -97,9 +160,6 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
-    labels:
-    # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
     network_mode: "service:gluetun"
     environment:
       - PUID=${USER_PUID}
@@ -111,7 +171,7 @@ services:
       - TP_THEME=${TP_THEME}
     volumes:
       - ${TBOX_CONFIG}/tools/sabnzbd:/config
-      - ${TBOX_STORAGE}/data/usenet:/data/usenet #optional
+      - ${TBOX_STORAGE}/data/usenet:/data/usenet
     #ports:
     #  - 8080:8080
     depends_on:
@@ -202,8 +262,6 @@ services:
       gluetun:
         condition: service_healthy
     restart: unless-stopped
-
-# Jellyfin
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
