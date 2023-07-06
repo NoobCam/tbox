@@ -45,8 +45,8 @@ services:
       - "traefik.http.routers.deluge.entrypoints=web"
       - "traefik.http.routers.deluge.service=deluge"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
-#      - "traefik.http.middlewares.redirect-deluge.redirectregex.regex=^http://192.168.224.2(.*)"
-#      - "traefik.http.middlewares.redirect-deluge.redirectregex.replacement=http://tbox.local$${1}"
+      - "traefik.http.middlewares.redirect-deluge.redirectregex.regex=^http://192.168.224.2:8112/(.*)"
+      - "traefik.http.middlewares.redirect-deluge.redirectregex.replacement=http://tbox.local:8112/$${1}"
     cap_add:
       - NET_ADMIN
     devices:
