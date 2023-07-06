@@ -13,7 +13,7 @@ services:
     image: "traefik"
     container_name: "traefik"
     command:
-      #- "--log.level=DEBUG"
+      - "--log.level=DEBUG"
       #- "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.deluge.service=deluge"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
       - "traefik.http.middlewares.redirect-deluge.redirectregex.regex=^http://192.168.224.2(.*)"
-      - "traefik.http.middlewares.redirect-deluge.redirectregex.replacement=http://tbox.local/$${1}"
+      - "traefik.http.middlewares.redirect-deluge.redirectregex.replacement=http://tbox.local$${1}"
     cap_add:
       - NET_ADMIN
     devices:
