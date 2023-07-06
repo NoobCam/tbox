@@ -216,7 +216,7 @@ services:
       - "traefik.http.routers.readarr.rule=Host(`readarr.tbox.local`)"
       - "traefik.http.routers.readarr.entrypoints=web"
       - "traefik.http.routers.readarr.service=readarr"
-      - "traefik.http.services.readarr.loadbalancer.server.port=8787:8787"
+      - "traefik.http.services.readarr.loadbalancer.server.port=8787"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
