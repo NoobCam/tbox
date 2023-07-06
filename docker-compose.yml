@@ -15,10 +15,10 @@ services:
     labels:
       # WEB Dashboard
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.tbox.local`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
       - "traefik.http.routers.dahsboard.entrypoints=web"
-      - "traefik.http.routers.api.rule=Host(`traefik.tbox.local`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.entrypoints=web"
     ports:
@@ -34,7 +34,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       - "traefik.enable=true"
       #deluge
-      - "traefik.http.routers.deluge.rule=Host(`deluge.tbox.local`)"
+      - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.deluge.entrypoints=web"
       - "traefik.http.routers.deluge.service=deluge"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
@@ -71,9 +71,6 @@ services:
       - 8388:8388/udp # Shadowsocks
       # Deluge
       - 8112:8112
-      - 6881:6881
-      - 6881:6881/udp
-
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
@@ -110,7 +107,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.sabnzbd.rule=Host(`nzb.tbox.local`)"
+      - "traefik.http.routers.sabnzbd.rule=Host(`nzb.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.sabnzbd.entrypoints=web"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
@@ -137,7 +134,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`movies.tbox.local`)"
+      - "traefik.http.routers.radarr.rule=Host(`movies.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.radarr.entrypoints=web"
       - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
@@ -170,7 +167,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`tv.tbox.local`)"
+      - "traefik.http.routers.sonarr.rule=Host(`tv.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.sonarr.entrypoints=web"
       - "traefik.http.routers.sonarr.service=sonarr"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
@@ -201,7 +198,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.readarr.rule=Host(`readarr.tbox.local`)"
+      - "traefik.http.routers.readarr.rule=Host(`readarr.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.readarr.entrypoints=web"
       - "traefik.http.routers.readarr.service=readarr"
       - "traefik.http.services.readarr.loadbalancer.server.port=8787"
@@ -232,7 +229,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`indexer.tbox.local`)"
+      - "traefik.http.routers.prowlarr.rule=Host(`indexer.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=web"
       - "traefik.http.routers.prowlarr.service=prowlarr"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
@@ -260,7 +257,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.tbox.local`)"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
