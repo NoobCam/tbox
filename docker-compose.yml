@@ -30,15 +30,8 @@ services:
       - "traefik.http.routers.api.entrypoints=web"
     ports:
       - "80:80"
-    networks:
-      gluetun-network:
-        ipv4_address: 192.168.224.3
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    restart: unless-stopped
 
   gluetun:
     image: qmcgaw/gluetun
@@ -52,31 +45,8 @@ services:
       - "traefik.http.routers.deluge.entrypoints=web"
       - "traefik.http.routers.deluge.service=deluge"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
-      # sabnzbd
-      - "traefik.http.routers.sabnzbd.rule=Host(`nzb.tbox.local`)"
-      - "traefik.http.routers.sabnzbd.entrypoints=web"
-      - "traefik.http.routers.sabnzbd.service=sabnzbd"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
-      #Sonarr
-      - "traefik.http.routers.sonarr.rule=Host(`tv.tbox.local`)"
-      - "traefik.http.routers.sonarr.entrypoints=web"
-      - "traefik.http.routers.sonarr.service=sonarr"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
-      # radarr
-      - "traefik.http.routers.radarr.rule=Host(`movies.tbox.local`)"
-      - "traefik.http.routers.radarr.entrypoints=web"
-      - "traefik.http.routers.radarr.service=radarr"
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
-      # prowlarr
-      - "traefik.http.routers.prowlarr.rule=Host(`indexer.tbox.local`)"
-      - "traefik.http.routers.prowlarr.entrypoints=web"
-      - "traefik.http.routers.prowlarr.service=prowlarr"
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
-      # jellyfin
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.tbox.local`)"
-      - "traefik.http.routers.jellyfin.entrypoints=web"
-      - "traefik.http.routers.jellyfin.service=jellyfin"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+      - "traefik.http.middlewares.redirect-deluge.redirectregex.regex=^http://192.168.224.2:8112/(.*)"
+      - "traefik.http.middlewares.redirect-deluge.redirectregex.replacement=http://tbox.local/$${1}"
     cap_add:
       - NET_ADMIN
     devices:
@@ -112,19 +82,6 @@ services:
       - 8112:8112
       - 6881:6881
       - 6881:6881/udp
-      #sabnzbd
-      - 8081:8080
-      # Radar
-      - 7878:7878
-      # Sonar
-      - 8989:8989
-      # Prowler
-      - 9696:9696
-      # Jellyfin
-      - 8096:8096
-      - 8920:8920 #optional
-      - 7359:7359/udp #optional
-      - 1900:1900/udp #optional
     networks:
       gluetun-network:
         ipv4_address: 192.168.224.2
@@ -160,7 +117,15 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
-    network_mode: "service:gluetun"
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.rule=Host(`nzb.tbox.local`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=web"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
@@ -172,11 +137,8 @@ services:
     volumes:
       - ${TBOX_CONFIG}/tools/sabnzbd:/config
       - ${TBOX_STORAGE}/data/usenet:/data/usenet
-    #ports:
-    #  - 8080:8080
-    depends_on:
-      gluetun:
-        condition: service_healthy
+    ports:
+      -  8080:8080
     restart: unless-stopped
 
   radarr:
@@ -185,7 +147,12 @@ services:
     labels:
       # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`movies.tbox.local`)"
+      - "traefik.http.routers.radarr.entrypoints=web"
+      - "traefik.http.routers.radarr.service=radarr"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -202,12 +169,9 @@ services:
       - ${TBOX_CONFIG}/tools/radarr:/config
       # Storage dirs
       - ${TBOX_STORAGE}/data:/data
-    # ports:
-    #   # Radarr Web UI port
-    #   - 7878:7878
-    depends_on:
-      gluetun:
-        condition: service_healthy
+    ports:
+      # Radarr Web UI port
+      - 7878:7878
     restart: unless-stopped
 
   sonarr:
@@ -216,7 +180,12 @@ services:
     labels:
       # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`tv.tbox.local`)"
+      - "traefik.http.routers.sonarr.entrypoints=web"
+      - "traefik.http.routers.sonarr.service=sonarr"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
@@ -232,11 +201,8 @@ services:
       - ${TBOX_CONFIG}/tools/sonarr:/config
       # Storage dir
       - ${TBOX_STORAGE}/data:/data
-    # ports:
-    #   - 8989:8989
-    depends_on:
-      gluetun:
-        condition: service_healthy
+    ports:
+      - 8989:8989
     restart: unless-stopped
 
   prowlarr:
@@ -245,7 +211,12 @@ services:
     labels:
       # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`indexer.tbox.local`)"
+      - "traefik.http.routers.prowlarr.entrypoints=web"
+      - "traefik.http.routers.prowlarr.service=prowlarr"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
@@ -256,12 +227,11 @@ services:
       - TP_THEME=${TP_THEME}
     volumes:
       - ${TBOX_CONFIG}/tools/prowlarr:/config
-    # ports:
-    #   - 9696:9696
-    depends_on:
-      gluetun:
-        condition: service_healthy
+    ports:
+      - 9696:9696
     restart: unless-stopped
+
+# Jellyfin
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -269,7 +239,12 @@ services:
     labels:
       # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.tbox.local`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.routers.jellyfin.service=jellyfin"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
@@ -279,12 +254,9 @@ services:
     volumes:
       - ${TBOX_CONFIG}/tools/jellyfin:/config
       - ${TBOX_STORAGE}/data/media:/data/media
-    # ports:
-    #   - 8096:8096
+    ports:
+      - 8096:8096
     #   - 8920:8920 #optional
     #   - 7359:7359/udp #optional
     #   - 1900:1900/udp #optional
-    depends_on:
-      gluetun:
-        condition: service_healthy
     restart: unless-stopped
