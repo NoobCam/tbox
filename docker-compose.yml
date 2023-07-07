@@ -14,7 +14,7 @@ services:
       # Let's Encrypt test
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=email@example.com"
+      - "--certificatesresolvers.myresolver.acme.email=netsecnoob@protonmail.com"
       # acme sandbox
       - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       # production cert resolver
