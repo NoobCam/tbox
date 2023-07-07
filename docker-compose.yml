@@ -20,6 +20,7 @@ services:
       - --entrypoints.websecure.http.tls.domains[0].sans=*.${TBOX_DOMAIN}
       - --entrypoints.websecure.http.tls.certresolver=myresolver
       - --certificatesresolvers.myresolver.acme.dnschallenge=true
+      - --certificatesresolvers.myresolver.acme.dnschallenge.disablepropagationcheck=true
       - --certificatesresolvers.myresolver.acme.dnschallenge.provider=namecheap
       - --certificatesresolvers.myresolver.acme.email=netsecnoob@protonmail.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
