@@ -3,7 +3,7 @@ version: "3.3"
 services:
 
   traefik:
-    image: "traefik"
+    image: "traefik:latest"
     container_name: "traefik"
     command:
       - "--log.level=DEBUG"
@@ -15,8 +15,8 @@ services:
       - --entrypoints.web.http.redirections.entryPoint.to=https
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
-      - --entrypoints.websecure.http.tls.domains[0].main=traefik.${TBOX_DOMAIN}
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.traefik.*${TBOX_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].main=${TBOX_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].sans=*${TBOX_DOMAIN}
       - --entrypoints.websecure.http.tls.certresolver=myresolver
       - --certificatesresolvers.myresolver.acme.dnschallenge=true
       - --certificatesresolvers.myresolver.acme.dnschallenge.provider=namecheap
@@ -38,9 +38,9 @@ services:
       - "traefik.http.routers.api.entrypoints=websecure"
       #TEST
       - "traefik.http.routers.api.tls.certresolver=myresolver"
-    enviroment:
-      - NAMECHEAP_API_USER=${NAMECHEAP_API_USER}
-      - NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}
+    environment:
+      - "NAMECHEAP_API_USER=${NAMECHEAP_API_USER}"
+      - "NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}"
     ports:
       - "80:80"
       - "443:443"
