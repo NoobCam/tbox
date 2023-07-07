@@ -32,12 +32,16 @@ services:
       - "traefik.http.routers.dashboard.service=dashboard@internal"
       - "traefik.http.routers.dahsboard.entrypoints=websecure"
       #test
+      - "traefik.http.routers.dashboard.tls: true"
+      #test
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
       # API
       - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.entrypoints=websecure"
+      #test
+      - "traefik.http.routers.api.tls: true"
       #TEST
       - "traefik.http.routers.api.tls.certresolver=myresolver"
     environment:
