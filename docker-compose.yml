@@ -276,3 +276,29 @@ services:
     #   - 7359:7359/udp #optional
     #   - 1900:1900/udp #optional
     restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibreweb.rule=Host(`calibre.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.calibreweb.entrypoints=web"
+      - "traefik.http.routers.calibreweb.service=calibreweb"
+      - "traefik.http.services.calibreweb.loadbalancer.server.port=8083"
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - ${TBOX_CONFIG}/tools/calibreweb:/config
+      - ${TBOX_STORAGE}/data/media/books:/data
+    ports:
+      - 8083:8083
+    restart: unless-stopped    
