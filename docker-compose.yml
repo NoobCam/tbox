@@ -56,10 +56,6 @@ services:
       - "traefik.enable=true"
       #deluge
       - "traefik.enable=true"
-      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
-      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
-      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
       - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.deluge.service=deluge"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
