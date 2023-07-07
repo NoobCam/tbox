@@ -34,7 +34,7 @@ services:
       #test
       - "traefik.http.routers.dashboard.tls: true"
       #test
-      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      # - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
       # API
       - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
