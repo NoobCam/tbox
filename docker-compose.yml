@@ -307,3 +307,28 @@ services:
     #   - 7359:7359/udp #optional
     #   - 1900:1900/udp #optional
     restart: unless-stopped
+
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.overseerr.tls=true"
+      - "traefik.http.routers.overseerr.tls.certresolver=myresolver"
+      - "traefik.http.routers.overseerr.rule=Host(`overseerr.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.overseerr.service=overseerr"
+      - "traefik.http.services.overseerr.loadbalancer.server.port=8096"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${TBOX_CONFIG}/tools/overseer:/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
