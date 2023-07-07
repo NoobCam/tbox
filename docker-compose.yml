@@ -129,12 +129,10 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
-      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
-      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
       - "traefik.http.routers.sabnzbd.rule=Host(`nzb.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.routers.myweb.tls=true"
+      - "traefik.http.routers.myweb.tls.certresolver=myresolver"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
     environment:
       - PUID=${USER_PUID}
