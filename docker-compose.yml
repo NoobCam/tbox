@@ -12,20 +12,19 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       # Let's Encrypt test
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=netsecnoob@protonmail.com"
-      # acme sandbox
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      # production cert resolver
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - --entrypoints.web.http.redirections.entryPoint.to=https
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --entrypoints.websecure.http.tls.domains[0].main=traefik.${TBOX_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.traefik.*${TBOX_DOMAIN}
+      - --entrypoints.websecure.http.tls.certresolver=myresolver
+      - --certificatesresolvers.myresolver.acme.dnschallenge=true
+      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=namecheap
+      - --certificatesresolvers.myresolver.acme.email=netsecnoob@protonmail.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     labels:
       # General config
       - "traefik.enable=true"
-      #test
-      - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
-      - "traefik.http.middlewares.redirect-https.redirectScheme.permanent=true"
-
       # Web Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
@@ -39,6 +38,9 @@ services:
       - "traefik.http.routers.api.entrypoints=websecure"
       #TEST
       - "traefik.http.routers.api.tls.certresolver=myresolver"
+    enviroment:
+      - NAMECHEAP_API_USER=${NAMECHEAP_API_USER}
+      - NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}
     ports:
       - "80:80"
       - "443:443"
