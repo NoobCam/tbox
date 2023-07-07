@@ -77,7 +77,7 @@ services:
       #- OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
       #- OPENVPN_USER=${OPENVPN_USERNAME}
       #- OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      #WIREGUARD CONFIG
+      # WIREGUARD CONFIG
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
@@ -281,8 +281,6 @@ services:
     ports:
       - 9696:9696
     restart: unless-stopped
-
-# Jellyfin
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
