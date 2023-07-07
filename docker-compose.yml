@@ -169,10 +169,10 @@ services:
       - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
       - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
       - "traefik.http.routers.httpsonly.middlewares=httpsonly"
-      - "traefik.http.routers.radarr.rule=Host(`movies.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.routers.radarr.tls=true"
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+      - "traefik.http.routers.radarr.rule=Host(`movies.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
@@ -203,8 +203,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
+      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
+      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "traefik.http.routers.sonarr.rule=Host(`tv.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.sonarr.entrypoints=web"
       - "traefik.http.routers.sonarr.service=sonarr"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
     environment:
@@ -234,8 +239,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
+      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
+      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "traefik.http.routers.readarr.rule=Host(`readarr.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.readarr.entrypoints=web"
       - "traefik.http.routers.readarr.service=readarr"
       - "traefik.http.services.readarr.loadbalancer.server.port=8787"
     environment:
@@ -265,8 +275,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
+      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
+      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "traefik.http.routers.prowlarr.rule=Host(`indexer.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.prowlarr.entrypoints=web"
       - "traefik.http.routers.prowlarr.service=prowlarr"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     environment:
@@ -293,8 +308,13 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
+      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
+      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      - "traefik.http.routers.radarr.tls=true"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.jellyfin.entrypoints=web"
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
     environment:
