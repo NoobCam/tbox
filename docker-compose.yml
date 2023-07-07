@@ -131,8 +131,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sabnzbd.rule=Host(`nzb.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
-      - "traefik.http.routers.myweb.tls=true"
-      - "traefik.http.routers.myweb.tls.certresolver=myresolver"
+      - "traefik.http.routers.sabnzbd.tls=true"
+      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
     environment:
       - PUID=${USER_PUID}
