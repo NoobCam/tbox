@@ -308,19 +308,19 @@ services:
     #   - 1900:1900/udp #optional
     restart: unless-stopped
 
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
     labels:
       # Enable automatic update with Watchtower
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.overseerr.tls=true"
-      - "traefik.http.routers.overseerr.tls.certresolver=myresolver"
-      - "traefik.http.routers.overseerr.rule=Host(`overseerr.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.overseerr.service=overseerr"
-      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+      - "traefik.http.routers.jellyseerr.tls=true"
+      - "traefik.http.routers.jellyseerr.tls.certresolver=myresolver"
+      - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.jellyseerr.service=jellyseerr"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -328,7 +328,7 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${TBOX_CONFIG}/tools/overseer:/config
+      - ${TBOX_CONFIG}/tools/jellyseerr:/config
     ports:
       - 5055:5055
     restart: unless-stopped
