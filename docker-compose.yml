@@ -11,20 +11,40 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - "--api.dashboard=true"
+      # Let's Encrypt test
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=email@example.com"
+      # acme sandbox
+      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # production cert resolver
+      #- "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     labels:
-      # WEB Dashboard
+      # General config
       - "traefik.enable=true"
+      #test
+      - "traefik.http.middlewares.redirect-https.redirectScheme.scheme=https"
+      - "traefik.http.middlewares.redirect-https.redirectScheme.permanent=true"
+
+      # Web Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
-      - "traefik.http.routers.dahsboard.entrypoints=web"
+      - "traefik.http.routers.dahsboard.entrypoints=websecure"
+      #test
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+
+      # API
       - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      #TEST
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
 
   gluetun:
     image: qmcgaw/gluetun
@@ -276,29 +296,3 @@ services:
     #   - 7359:7359/udp #optional
     #   - 1900:1900/udp #optional
     restart: unless-stopped
-
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-      # Traefik
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibreweb.rule=Host(`.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.calibreweb.entrypoints=web"
-      - "traefik.http.routers.calibreweb.service=calibreweb"
-      - "traefik.http.services.calibreweb.loadbalancer.server.port=8083"
-    environment:
-      - PUID=${USER_PUID}
-      - PGID=${USER_PGID}
-      - TZ=${TIMEZONE}
-      - UMASK=002
-      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
-    volumes:
-      - ${TBOX_CONFIG}/tools/calibreweb:/config
-      - ${TBOX_STORAGE}/data/media/books:/books
-    ports:
-      - 8083:8083
-    restart: unless-stopped    
