@@ -10,13 +10,9 @@ services:
 #      - "--api.insecure=true"
       - "--api.dashboard=true"
       - "--providers.docker=true"
-#      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      # Let's Encrypt test
-#      - --entrypoints.web.http.redirections.entryPoint.to=web
-#      - --entrypoints.web.http.redirections.entryPoint.scheme=https
-#      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      # Let's Encrypt - wildcard - Namecheap
       - --entrypoints.websecure.http.tls.domains[0].main=${TBOX_DOMAIN}
       - --entrypoints.websecure.http.tls.domains[0].sans=*.${TBOX_DOMAIN}
       - --entrypoints.websecure.http.tls.certresolver=myresolver
@@ -30,33 +26,17 @@ services:
       - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
       - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
       - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      #Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
-      - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      #API
+      - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.service=api@internal"
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
-      # # General config
-      # - "traefik.enable=true"
-      # # Web Dashboard
-      # - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`) || (Path(`/dashboard`)"
-      # - "traefik.http.routers.dashboard.service=dashboard@internal"
-      # - "traefik.http.routers.dahsboard.entrypoints=websecure"
-      # #test
-      # - "traefik.http.routers.dashboard.tls: true"
-      # #test
-      # # - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
-      # # # API
-      # # - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
-      # # - "traefik.http.routers.api.service=api@internal"
-      # # - "traefik.http.routers.api.entrypoints=websecure"
-      # # #test
-      # # - "traefik.http.routers.api.tls: true"
-      # # #TEST
-      # # - "traefik.http.routers.api.tls.certresolver=myresolver"
     environment:
       - "NAMECHEAP_API_USER=${NAMECHEAP_API_USER}"
       - "NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}"
@@ -176,7 +156,7 @@ services:
       # Traefik
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.rule=Host(`movies.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.radarr.entrypoints=web"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
       - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
     environment:
