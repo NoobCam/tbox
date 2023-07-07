@@ -285,7 +285,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.calibreweb.rule=Host(`calibre.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.calibreweb.rule=Host(`.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.calibreweb.entrypoints=web"
       - "traefik.http.routers.calibreweb.service=calibreweb"
       - "traefik.http.services.calibreweb.loadbalancer.server.port=8083"
@@ -298,7 +298,7 @@ services:
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
       - ${TBOX_CONFIG}/tools/calibreweb:/config
-      - ${TBOX_STORAGE}/data/media/books:/data
+      - ${TBOX_STORAGE}/data/media/books:/books
     ports:
       - 8083:8083
     restart: unless-stopped    
