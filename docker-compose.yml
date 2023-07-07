@@ -11,6 +11,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.address=:443"
       # Let's Encrypt test
       - --entrypoints.web.http.redirections.entryPoint.to=https
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
