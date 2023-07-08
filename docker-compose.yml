@@ -327,7 +327,7 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-      - ${TBOX_CONFIG}/tools/jellyseerr:/config
+      - ${TBOX_CONFIG}/tools/jellyseerr:/app/config
     ports:
       - 5055:5055
     restart: unless-stopped
