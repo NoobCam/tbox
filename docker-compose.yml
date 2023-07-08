@@ -53,9 +53,9 @@ services:
       - "traefik.enable=true"
       #deluge
       - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.deluge.middlewares=redirect-to-https@docker"
+      - "traefik.http.routers.deluge.entrypoints=websecure"
       - "traefik.http.routers.deluge.service=deluge"
-      - "traefik.http.routers.deluge.tls=true"
-      - "traefik.http.routers.deluge.tls.certresolver=myresolver"
       - "traefik.http.services.deluge.loadbalancer.server.port=8112"
     cap_add:
       - NET_ADMIN
