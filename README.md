@@ -6,39 +6,32 @@ Docker stack for torrenting and usenet, this is intended to not be exposed to th
 
 A fullstack docker setup to download torrents and usenet, while protecting the stack behind an openvpn client
 
-* Gluetun - Lightweight swiss-knife-like VPN client to multiple VPN service providers
-* Traefik - Cloud native application proxy
-* Deluge -  Lightweight, Free Software, cross-platform BitTorrent client.
-* SABnzbd - Free and easy binary newsreader
-* Sonarr - advanced software-based Personal Video Recorder (PVR) for TV shows.
-* Radarr - advanced software-based Personal Video Recorder (PVR) for movies.
-* Prowler - Indexer manager/proxy to integrate with your various PVR apps.
-* Jellyfin - Volunteer-built media solution
+* Gluetun - Lightweight swiss-knife-like VPN client to multiple VPN service providers - https://github.com/qdm12/gluetun
+* Traefik - Cloud native application proxy - https://doc.traefik.io/traefik/getting-started/quick-start/
+* Deluge -  Lightweight, Free Software, cross-platform BitTorrent client. - https://hub.docker.com/r/linuxserver/deluge
+* SABnzbd - Free and easy binary newsreader - https://sabnzbd.org/
+* Sonarr - advanced software-based Personal Video Recorder (PVR) for TV shows. - https://sonarr.tv/
+* Radarr - advanced software-based Personal Video Recorder (PVR) for movies. - https://radarr.video/
+* Prowler - Indexer manager/proxy to integrate with your various PVR apps. https://github.com/Prowlarr/Prowlarr
+* Jellyfin - Volunteer-built media solution - https://jellyfin.org/
+* jellyseer - https://github.com/Fallenbagel/jellyseerr
 
 ## Getting Started
 
 * Clone this repo
 * Edit copy the ```example.env``` file to ```.env``` and add variables accordingly
 * (Optional) mount the file share to the docker host via fstab
-* configure share permissions
+* configure share permissions from share host - in my case I use a NFS share hosted remotly
 
 ```
-sudo chown -R docker:users /folder
-
-sudo chmod -R a=,a+rX,u+w,g+w /folder  (775)
+mkdir /foo
+chown -R nobody /foo
+chmod -R a=,a+rX,u+w,g+w /folder  (775)
 ```
 
 * chmod +x all the ```*.sh``` files
 * launch the montior stack  ```./launch-monitor.sh```
 * launch the tbox stack ```./launch-tbox.sh```
-* When configuring the applications (sonarr, radarr, prowlarr) use the gluetun static IP to setup the apps and download clients
-
-```
-    networks:
-      gluetun-network:
-        ipv4_address: 192.168.224.2
-
-```
 * setup subdomains in your internal dns overrides
 
 ## Authors
