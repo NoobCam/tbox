@@ -44,80 +44,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
 
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-      - "traefik.enable=true"
-      #deluge
-      - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.deluge.middlewares=redirect-to-https@docker"
-      - "traefik.http.routers.deluge.entrypoints=websecure"
-      - "traefik.http.routers.deluge.service=deluge"
-      - "traefik.http.services.deluge.loadbalancer.server.port=8112"
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    environment:
-      - TZ=${TIMEZONE}
-      #OPEN VPN CONFIG
-      #- VPN_SERVICE_PROVIDER=custom
-      #- VPN_TYPE=openvpn
-      #- OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
-      #- OPENVPN_USER=${OPENVPN_USERNAME}
-      #- OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      # WIREGUARD CONFIG
-      - VPN_SERVICE_PROVIDER=custom
-      - VPN_TYPE=wireguard
-      - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
-      - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
-      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      #HTTP PROXY
-      - HTTPPROXY=on
-      - HTTPPROXY_USER=${HTTPPROXY_USER}
-      - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
-    #volumes:
-      #- ${OPENVPN_CONF}:/gluetun/custom.conf:ro
-    ports:
-      # Gluetun
-      - 8888:8888/tcp # HTTP proxy
-      - 8388:8388/tcp # Shadowsocks
-      - 8388:8388/udp # Shadowsocks
-      # Deluge
-      - 8112:8112
-
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
-    environment:
-      - PUID=${USER_PUID}
-      - PGID=${USER_PGID}
-      - TZ=${TIMEZONE}
-      - DELUGE_LOGLEVEL=error #optional
-      - UMASK=002
-      # themes
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
-      - TP_THEME=${TP_THEME}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      # Configuration dir
-      - ${TBOX_CONFIG}/tools/deluge:/config
-      # Storage dirs
-      - ${TBOX_STORAGE}/data/torrents:/data/torrents
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    restart: unless-stopped
-
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
@@ -126,11 +52,11 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.sabnzbd.tls=true"
-      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
       - "traefik.http.routers.sabnzbd.rule=Host(`nzb.${TBOX_DOMAIN}`)"
+      - "traefik.http.routers.sabnzbd.middlewares=redirect-to-https@docker"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8112"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
