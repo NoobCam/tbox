@@ -34,6 +34,7 @@ services:
       - "traefik.http.routers.redirect-http.rule=HostRegexp(`{host:.+}`)"
       - "traefik.http.routers.redirect-http.entrypoints=web"
       - "traefik.http.routers.redirect-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
       - "NAMECHEAP_API_USER=${NAMECHEAP_API_USER}"
       - "NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}"
