@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.9"
 
 services:
 
@@ -7,7 +7,6 @@ services:
     container_name: "traefik"
     command:
       # - "--log.level=DEBUG"
-      # - "--api.insecure=true"
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
@@ -47,7 +46,8 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
-
+    restart: unless-stopped
+    
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
@@ -94,6 +94,7 @@ services:
       - 8388:8388/udp # Shadowsocks
       # Deluge
       - 8112:8112
+    restart: unless-stopped
 
   deluge:
     image: lscr.io/linuxserver/deluge:latest
@@ -108,7 +109,7 @@ services:
       - TZ=${TIMEZONE}
       - DELUGE_LOGLEVEL=error #optional
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
       - TP_THEME=${TP_THEME}
     volumes:
@@ -139,7 +140,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sabnzbd
       - TP_THEME=${TP_THEME}
     volumes:
@@ -168,7 +169,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
       - TP_THEME=${TP_THEME}
     volumes:
@@ -202,7 +203,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
       - TP_THEME=${TP_THEME}
     volumes:
@@ -235,7 +236,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:readarr
       - TP_THEME=${TP_THEME}
     volumes:
@@ -268,7 +269,7 @@ services:
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
-      # themes
+      # Themes
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr
       - TP_THEME=${TP_THEME}
     volumes:
@@ -330,4 +331,37 @@ services:
       - ${TBOX_CONFIG}/tools/jellyseerr:/app/config
     ports:
       - 5055:5055
+    restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.tls=true"
+      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+      - "traefik.http.routers.sonarr.rule=Host(`book.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.sonarr.service=calibre-web"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      # Themes
+      # - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      # - TP_THEME=${TP_THEME}
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/calibreweb:/config
+      # Storage dir
+      - ${TBOX_STORAGE}/data/media/books:/books
+    ports:
+      - 8989:8989
     restart: unless-stopped
