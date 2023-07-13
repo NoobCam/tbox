@@ -341,11 +341,11 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       # Traefik
       - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.tls=true"
-      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
-      - "traefik.http.routers.sonarr.rule=Host(`book.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.sonarr.service=calibre-web"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      - "traefik.http.routers.calibreweb.tls=true"
+      - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
+      - "traefik.http.routers.calibreweb.rule=Host(`book.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.calibreweb.service=calibreweb"
+      - "traefik.http.services.calibreweb.loadbalancer.server.port=8989"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
