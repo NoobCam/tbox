@@ -363,5 +363,5 @@ services:
       # Storage dir
       - ${TBOX_STORAGE}/data/media/books:/books
     ports:
-      - 8989:8989
+      - 8083:8083
     restart: unless-stopped
