@@ -217,6 +217,39 @@ services:
       - 8989:8989
     restart: unless-stopped
 
+  sonarr-anime:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-anime
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr-anime.tls=true"
+      - "traefik.http.routers.sonarr-anime.tls.certresolver=myresolver"
+      - "traefik.http.routers.sonarr-anime.rule=Host(`anime.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.sonarr.service=sonarr-anime"
+      - "traefik.http.services.sonarr-anime.loadbalancer.server.port=9898"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+      # Themes
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=${TP_THEME}
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/sonarr-anime:/config
+      # Storage dir
+      - ${TBOX_STORAGE}/data:/data
+    ports:
+      - 9898:8989
+    restart: unless-stopped
+
   readarr:
     image: lscr.io/linuxserver/readarr:develop
     container_name: readarr
