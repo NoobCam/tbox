@@ -229,7 +229,7 @@ services:
       - "traefik.http.routers.sonarr-anime.tls.certresolver=myresolver"
       - "traefik.http.routers.sonarr-anime.rule=Host(`anime.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
       - "traefik.http.routers.sonarr.service=sonarr-anime"
-      - "traefik.http.services.sonarr-anime.loadbalancer.server.port=9898"
+      - "traefik.http.services.sonarr-anime.loadbalancer.server.port=8998"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -247,7 +247,7 @@ services:
       # Storage dir
       - ${TBOX_STORAGE}/data:/data
     ports:
-      - 9898:8989
+      - 8998:8989
     restart: unless-stopped
 
   readarr:
