@@ -228,7 +228,7 @@ services:
       - "traefik.http.routers.sonarr-anime.tls=true"
       - "traefik.http.routers.sonarr-anime.tls.certresolver=myresolver"
       - "traefik.http.routers.sonarr-anime.rule=Host(`anime.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.sonarr.service=sonarr-anime"
+      - "traefik.http.routers.sonarr-anime.service=sonarr-anime"
       - "traefik.http.services.sonarr-anime.loadbalancer.server.port=8998"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
