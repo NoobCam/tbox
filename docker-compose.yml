@@ -378,7 +378,7 @@ services:
       - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
       - "traefik.http.routers.calibreweb.rule=Host(`book.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
       - "traefik.http.routers.calibreweb.service=calibreweb"
-      - "traefik.http.services.calibreweb.loadbalancer.server.port=8989"
+      - "traefik.http.services.calibreweb.loadbalancer.server.port=8083"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -394,7 +394,7 @@ services:
       # Configuration dir
       - ${TBOX_CONFIG}/tools/calibreweb:/config
       # Storage dir
-      - ${TBOX_STORAGE}/data/usenet/books:/books
+      - ${TBOX_STORAGE}/data/media/books:/books
     ports:
       - 8083:8083
     restart: unless-stopped
