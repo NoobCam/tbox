@@ -366,7 +366,7 @@ services:
       - 5055:5055
     restart: unless-stopped
 
-  calibre-web:
+  calibreweb:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
     labels:
