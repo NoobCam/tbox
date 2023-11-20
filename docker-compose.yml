@@ -394,7 +394,7 @@ services:
       # Configuration dir
       - ${TBOX_CONFIG}/tools/calibreweb:/config
       # Storage dir
-      - ${TBOX_STORAGE}/data/media/books:/books
+      - ${TBOX_STORAGE}/data/usenet/books:/books
     ports:
       - 8083:8083
     restart: unless-stopped
