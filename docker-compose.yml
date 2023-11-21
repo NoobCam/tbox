@@ -398,3 +398,36 @@ services:
     ports:
       - 8083:8083
     restart: unless-stopped
+
+
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.calibreweb.tls=true"
+      - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
+      - "traefik.http.routers.calibreweb.rule=Host(`calibre.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.calibreweb.service=calibre"
+      - "traefik.http.services.calibreweb.loadbalancer.server.port=8282"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Configuration dir
+      - ${TBOX_CONFIG}/tools/calibre:/config
+      # Storage dir
+      - ${TBOX_STORAGE}/data/media/books:/books
+    ports:
+      - 8282:8080
+      - 8181:8181
+      - 8081:8081
+    restart: unless-stopped
