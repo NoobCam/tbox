@@ -425,9 +425,7 @@ services:
       # Configuration dir
       - ${TBOX_CONFIG}/tools/calibre:/config
       # Storage dir
-      - ${TBOX_STORAGE}/data/media/books:/books
-      # Upload Dir
-      - ${TBOX_STORAGE}/data/usenet/books:/upload
+      - ${TBOX_STORAGE}/data:/data
     ports:
       - 8282:8080
       - 8181:8181
