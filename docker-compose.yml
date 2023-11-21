@@ -433,28 +433,28 @@ services:
     restart: unless-stopped
 
 
-    kavita:
-        image: jvmilazz0/kavita:latest    # Using the stable branch from the offical repo.
-        container_name: kavita
-        labels:
-        # Enable automatic update with Watchtower
-        - "com.centurylinklabs.watchtower.enable=true"
-        # Traefik
-        - "traefik.enable=true"
-        - "traefik.http.routers.calibreweb.tls=true"
-        - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
-        - "traefik.http.routers.calibreweb.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-        - "traefik.http.routers.calibreweb.service=kavita"
-        - "traefik.http.services.calibreweb.loadbalancer.server.port=5000"        
-        volumes:
-            - ${TBOX_STORAGE}/data/usenet/books:/books
-            - ${TBOX_CONFIG}/tools/:/kavita/config
-        environment:
-          # User from docker host to impersonate in container (configured in .env file)
-          - PUID=${USER_PUID}
-          - PGID=${USER_PGID}
-          - TZ=${TIMEZONE}
-          - UMASK=002
-        ports:
-            - "5000:5000" # Change the public port (the first 5000) if you have conflicts with other services
-        restart: unless-stopped
+  kavita:
+    image: jvmilazz0/kavita:latest    # Using the stable branch from the offical repo.
+    container_name: kavita
+    labels:
+    # Enable automatic update with Watchtower
+    - "com.centurylinklabs.watchtower.enable=true"
+    # Traefik
+    - "traefik.enable=true"
+    - "traefik.http.routers.calibreweb.tls=true"
+    - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
+    - "traefik.http.routers.calibreweb.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+    - "traefik.http.routers.calibreweb.service=kavita"
+    - "traefik.http.services.calibreweb.loadbalancer.server.port=5000"        
+    volumes:
+        - ${TBOX_STORAGE}/data/usenet/books:/books
+        - ${TBOX_CONFIG}/tools/:/kavita/config
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    ports:
+        - "5000:5000" # Change the public port (the first 5000) if you have conflicts with other services
+    restart: unless-stopped
