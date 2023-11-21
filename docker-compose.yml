@@ -366,73 +366,6 @@ services:
       - 5055:5055
     restart: unless-stopped
 
-  calibreweb:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-      # Traefik
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibreweb.tls=true"
-      - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
-      - "traefik.http.routers.calibreweb.rule=Host(`book.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.calibreweb.service=calibreweb"
-      - "traefik.http.services.calibreweb.loadbalancer.server.port=8083"
-    environment:
-      # User from docker host to impersonate in container (configured in .env file)
-      - PUID=${USER_PUID}
-      - PGID=${USER_PGID}
-      - TZ=${TIMEZONE}
-      - UMASK=002
-      # Themes
-      # - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
-      # - TP_THEME=${TP_THEME}
-    volumes:
-      # Sync time with docker host
-      - /etc/localtime:/etc/localtime:ro
-      # Configuration dir
-      - ${TBOX_CONFIG}/tools/calibreweb:/config
-      # Storage dir
-      - ${TBOX_STORAGE}/data/media/books:/books
-    ports:
-      - 8083:8083
-    restart: unless-stopped
-
-
-  calibre:
-    image: lscr.io/linuxserver/calibre:latest
-    container_name: calibre
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-      # Traefik
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibreweb.tls=true"
-      - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
-      - "traefik.http.routers.calibreweb.rule=Host(`calibre.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.calibreweb.service=calibre"
-      - "traefik.http.services.calibreweb.loadbalancer.server.port=8282"
-    environment:
-      # User from docker host to impersonate in container (configured in .env file)
-      - PUID=${USER_PUID}
-      - PGID=${USER_PGID}
-      - TZ=${TIMEZONE}
-      - UMASK=002
-    volumes:
-      # Sync time with docker host
-      - /etc/localtime:/etc/localtime:ro
-      # Configuration dir
-      - ${TBOX_CONFIG}/tools/calibre:/config
-      # Storage dir
-      - ${TBOX_STORAGE}/data:/data
-    ports:
-      - 8282:8080
-      - 8181:8181
-      - 8081:8081
-    restart: unless-stopped
-
-
   kavita:
     image: jvmilazz0/kavita:latest    # Using the stable branch from the offical repo.
     container_name: kavita
@@ -446,15 +379,15 @@ services:
     - "traefik.http.routers.calibreweb.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
     - "traefik.http.routers.calibreweb.service=kavita"
     - "traefik.http.services.calibreweb.loadbalancer.server.port=5000"        
-    volumes:
-        - ${TBOX_STORAGE}/data/usenet/books:/books
-        - ${TBOX_CONFIG}/tools/:/kavita/config
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
       - TZ=${TIMEZONE}
       - UMASK=002
+    volumes:
+        - ${TBOX_STORAGE}/data/usenet/books:/books
+        - ${TBOX_CONFIG}/tools/:/kavita/config
     ports:
-        - "5000:5000" # Change the public port (the first 5000) if you have conflicts with other services
+        - "5000:5000" 
     restart: unless-stopped
