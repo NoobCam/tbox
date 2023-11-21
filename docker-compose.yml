@@ -374,11 +374,11 @@ services:
     - "com.centurylinklabs.watchtower.enable=true"
     # Traefik
     - "traefik.enable=true"
-    - "traefik.http.routers.calibreweb.tls=true"
-    - "traefik.http.routers.calibreweb.tls.certresolver=myresolver"
-    - "traefik.http.routers.calibreweb.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-    - "traefik.http.routers.calibreweb.service=kavita"
-    - "traefik.http.services.calibreweb.loadbalancer.server.port=5000"        
+    - "traefik.http.routers.kavita.tls=true"
+    - "traefik.http.routers.kavita.tls.certresolver=myresolver"
+    - "traefik.http.routers.kavita.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+    - "traefik.http.routers.kavita.service=kavita"
+    - "traefik.http.services.kavita.loadbalancer.server.port=5000"        
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
