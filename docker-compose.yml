@@ -386,7 +386,8 @@ services:
       - TZ=${TIMEZONE}
       - UMASK=002
     volumes:
-        - ${TBOX_STORAGE}/data/media/books:/books
+        - ${TBOX_STORAGE}/data/usenet/books:/books_usenet
+        - ${TBOX_STORAGE}/data/media/books:/books_media
         - ${TBOX_CONFIG}/tools/:/kavita/config
     ports:
         - "5000:5000" 
