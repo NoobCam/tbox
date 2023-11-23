@@ -406,11 +406,6 @@ services:
     - "traefik.http.routers.homarr.rule=Host(`homarr.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
     - "traefik.http.routers.homarr.service=homarr"
     - "traefik.http.services.homarr.loadbalancer.server.port=7575"
-    environment:
-    - PUID=${USER_PUID}
-    - PGID=${USER_PGID}
-    - TZ=${TIMEZONE}
-    - UMASK=002
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
