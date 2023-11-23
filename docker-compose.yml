@@ -48,80 +48,80 @@ services:
       - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
     restart: unless-stopped
     
-  gluetun:
-    image: qmcgaw/gluetun
-    container_name: gluetun
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-      - "traefik.enable=true"
-      #deluge
-      - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.deluge.service=deluge"
-      - "traefik.http.routers.deluge.tls=true"
-      - "traefik.http.routers.deluge.tls.certresolver=myresolver"
-      - "traefik.http.services.deluge.loadbalancer.server.port=8112"
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    environment:
-      - TZ=${TIMEZONE}
-      # OPEN VPN CONFIG
-      #- VPN_SERVICE_PROVIDER=custom
-      #- VPN_TYPE=openvpn
-      #- OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
-      #- OPENVPN_USER=${OPENVPN_USERNAME}
-      #- OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      # WIREGUARD CONFIG
-      - VPN_SERVICE_PROVIDER=custom
-      - VPN_TYPE=wireguard
-      - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
-      - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
-      - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      #HTTP PROXY
-      - HTTPPROXY=on
-      - HTTPPROXY_USER=${HTTPPROXY_USER}
-      - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
-    #volumes:
-      #- ${OPENVPN_CONF}:/gluetun/custom.conf:ro
-    ports:
-      # Gluetun
-      - 8888:8888/tcp # HTTP proxy
-      - 8388:8388/tcp # Shadowsocks
-      - 8388:8388/udp # Shadowsocks
-      # Deluge
-      - 8112:8112
-    restart: unless-stopped
+  # gluetun:
+  #   image: qmcgaw/gluetun
+  #   container_name: gluetun
+  #   labels:
+  #     # Enable automatic update with Watchtower
+  #     - "com.centurylinklabs.watchtower.enable=true"
+  #     - "traefik.enable=true"
+  #     #deluge
+  #     - "traefik.http.routers.deluge.rule=Host(`deluge.${TBOX_DOMAIN}`)"
+  #     - "traefik.http.routers.deluge.service=deluge"
+  #     - "traefik.http.routers.deluge.tls=true"
+  #     - "traefik.http.routers.deluge.tls.certresolver=myresolver"
+  #     - "traefik.http.services.deluge.loadbalancer.server.port=8112"
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   environment:
+  #     - TZ=${TIMEZONE}
+  #     # OPEN VPN CONFIG
+  #     #- VPN_SERVICE_PROVIDER=custom
+  #     #- VPN_TYPE=openvpn
+  #     #- OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
+  #     #- OPENVPN_USER=${OPENVPN_USERNAME}
+  #     #- OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+  #     # WIREGUARD CONFIG
+  #     - VPN_SERVICE_PROVIDER=custom
+  #     - VPN_TYPE=wireguard
+  #     - VPN_ENDPOINT_IP=${VPN_ENDPOINT_IP}
+  #     - VPN_ENDPOINT_PORT=${VPN_ENDPOINT_PORT}
+  #     - WIREGUARD_PUBLIC_KEY=${WIREGUARD_PUBLIC_KEY}
+  #     - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+  #     - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+  #     #HTTP PROXY
+  #     - HTTPPROXY=on
+  #     - HTTPPROXY_USER=${HTTPPROXY_USER}
+  #     - HTTPPROXY_PASSWORD=${HTTPPROXY_PASSWORD}
+  #   #volumes:
+  #     #- ${OPENVPN_CONF}:/gluetun/custom.conf:ro
+  #   ports:
+  #     # Gluetun
+  #     - 8888:8888/tcp # HTTP proxy
+  #     - 8388:8388/tcp # Shadowsocks
+  #     - 8388:8388/udp # Shadowsocks
+  #     # Deluge
+  #     - 8112:8112
+  #   restart: unless-stopped
 
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
-    labels:
-      # Enable automatic update with Watchtower
-      - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: "service:gluetun"
-    environment:
-      - PUID=${USER_PUID}
-      - PGID=${USER_PGID}
-      - TZ=${TIMEZONE}
-      - DELUGE_LOGLEVEL=error #optional
-      - UMASK=002
-      # Themes
-      - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
-      - TP_THEME=${TP_THEME}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      # Configuration dir
-      - ${TBOX_CONFIG}/tools/deluge:/config
-      # Storage dirs
-      - ${TBOX_STORAGE}/data/torrents:/data/torrents
-    depends_on:
-      gluetun:
-        condition: service_healthy
-    restart: unless-stopped
+  # deluge:
+  #   image: lscr.io/linuxserver/deluge:latest
+  #   container_name: deluge
+  #   labels:
+  #     # Enable automatic update with Watchtower
+  #     - "com.centurylinklabs.watchtower.enable=true"
+  #   network_mode: "service:gluetun"
+  #   environment:
+  #     - PUID=${USER_PUID}
+  #     - PGID=${USER_PGID}
+  #     - TZ=${TIMEZONE}
+  #     - DELUGE_LOGLEVEL=error #optional
+  #     - UMASK=002
+  #     # Themes
+  #     - DOCKER_MODS=ghcr.io/gilbn/theme.park:deluge
+  #     - TP_THEME=${TP_THEME}
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     # Configuration dir
+  #     - ${TBOX_CONFIG}/tools/deluge:/config
+  #     # Storage dirs
+  #     - ${TBOX_STORAGE}/data/torrents:/data/torrents
+  #   depends_on:
+  #     gluetun:
+  #       condition: service_healthy
+  #   restart: unless-stopped
 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
@@ -388,7 +388,34 @@ services:
     volumes:
         - ${TBOX_STORAGE}/data/usenet/books:/books_usenet
         - ${TBOX_STORAGE}/data/media/books:/books_media
-        - ${TBOX_CONFIG}/tools/:/kavita/config
+        - ${TBOX_CONFIG}/tools/kavita:/kavita/config
     ports:
         - "5000:5000" 
     restart: unless-stopped
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    labels:
+    # Enable automatic update with Watchtower
+    - "com.centurylinklabs.watchtower.enable=true"
+    # Traefik
+    - "traefik.enable=true"
+    - "traefik.http.routers.homarr.tls=true"
+    - "traefik.http.routers.homarr.tls.certresolver=myresolver"
+    - "traefik.http.routers.homarr.rule=Host(`homarr.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+    - "traefik.http.routers.homarr.service=homarr"
+    - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+    environment:
+    - PUID=${USER_PUID}
+    - PGID=${USER_PGID}
+    - TZ=${TIMEZONE}
+    - UMASK=002
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - ${TBOX_CONFIG}/tools/homarr:/app/data/configs
+      - ${TBOX_CONFIG}/tools/homarr:/app/public/icons
+      - ${TBOX_CONFIG}/tools/homarr:/data
+    ports:
+      - '7575:7575'
