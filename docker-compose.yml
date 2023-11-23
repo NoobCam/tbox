@@ -414,8 +414,8 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - ${TBOX_CONFIG}/tools/homarr:/app/data/configs
-      - ${TBOX_CONFIG}/tools/homarr:/app/public/icons
-      - ${TBOX_CONFIG}/tools/homarr:/data
+      - ${TBOX_CONFIG}/tools/homarr/configs:/app/data/configs
+      - ${TBOX_CONFIG}/tools/homarr/icons:/app/public/icons
+      - ${TBOX_CONFIG}/tools/homarr/data:/data
     ports:
       - '7575:7575'
