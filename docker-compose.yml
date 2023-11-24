@@ -434,7 +434,7 @@ services:
       # Access Docker socket to manage all containers
       - /var/run/docker.sock:/var/run/docker.sock
       # Portainer data (not persisted)
-      - portainer_data:/data
+      - ${TBOX_CONFIG}/tools/portainer:/data
     ports:
       - 8000:8000
       # Portainer web UI port
