@@ -414,3 +414,55 @@ services:
       - ${TBOX_CONFIG}/tools/homarr/data:/data
     ports:
       - '7575:7575'
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    labels:
+      # Enable automatic update with Watchtower
+    - "com.centurylinklabs.watchtower.enable=true"
+    # Traefik
+    - "traefik.enable=true"
+    - "traefik.http.routers.portainer.tls=true"
+    - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+    - "traefik.http.routers.portainer.rule=Host(`portainer.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+    - "traefik.http.routers.portainer.service=portainer"
+    - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Access Docker socket to manage all containers
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Portainer data (not persisted)
+      - portainer_data:/data
+    ports:
+      - 8000:8000
+      # Portainer web UI port
+      - 9000:9000
+    restart: unless-stopped
+
+  watchtower:
+    # For x86 / x64 processors:
+    image: containrrr/watchtower:latest
+    # For ARM processors:
+    #image: containrrr/watchtower:armhf-latest
+    container_name: watchtower
+    labels:
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+    dns:
+      # Public DNS
+      - 9.9.9.9
+      - 8.8.4.4
+    environment:
+      # Only watch and update labelled containers
+      - WATCHTOWER_LABEL_ENABLE=true
+      # Restart one image at time instead of stopping and starting all at once
+      - WATCHTOWER_ROLLING_RESTART=true
+      # Job scheduler (cron format)
+      - "WATCHTOWER_SCHEDULE=0 15 5 * * *"
+    volumes:
+      # Sync time with docker host
+      - /etc/localtime:/etc/localtime:ro
+      # Access Docker socket to manage all containers
+      - /var/run/docker.sock:/var/run/docker.sock
