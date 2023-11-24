@@ -428,12 +428,19 @@ services:
     - "traefik.http.routers.homeassistant.rule=Host(`ha.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
     - "traefik.http.routers.homeassistant.service=homeassistant"
     - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+    environment:
+      # User from docker host to impersonate in container (configured in .env file)
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
     volumes:
       - ${TBOX_CONFIG}/tools/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8123:8123
     restart: unless-stopped
     privileged: true
-    # network_mode: host
 
   portainer:
     image: portainer/portainer-ce:latest
