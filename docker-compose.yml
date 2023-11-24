@@ -415,6 +415,26 @@ services:
     ports:
       - '7575:7575'
 
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    labels:
+    # Enable automatic update with Watchtower
+    - "com.centurylinklabs.watchtower.enable=true"
+    # Traefik
+    - "traefik.enable=true"
+    - "traefik.http.routers.homeassistant.tls=true"
+    - "traefik.http.routers.homeassistant.tls.certresolver=myresolver"
+    - "traefik.http.routers.homeassistant.rule=Host(`ha.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+    - "traefik.http.routers.homeassistant.service=homeassistant"
+    - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+    volumes:
+      - ${TBOX_CONFIG}/tools/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    # network_mode: host
+
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -466,3 +486,4 @@ services:
       - /etc/localtime:/etc/localtime:ro
       # Access Docker socket to manage all containers
       - /var/run/docker.sock:/var/run/docker.sock
+
