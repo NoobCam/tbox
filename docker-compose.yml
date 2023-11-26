@@ -62,7 +62,7 @@ services:
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      #- "traefik.http.middlewares.sabnzbd-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
       - "traefik.http.routers.sabnzbd.middlewares=lan-whitelist@docker"
     environment:
       - PUID=${USER_PUID}
@@ -269,7 +269,6 @@ services:
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
       # Traefik - ipwhitelist
-  jellyfin:
       - "traefik.http.middlewares.jellyfin-ipwhitelist.ipwhitelist.sourcerange=${IPWL_WG}"
       - "traefik.http.routers.jellyfin.middlewares=jellyfin-ipwhitelist@docker"
     environment:
