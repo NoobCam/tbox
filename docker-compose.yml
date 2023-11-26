@@ -2,6 +2,25 @@ version: "3.9"
 
 services:
 
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '87:80' # Public HTTP Port
+      - '444:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      - PUID=${USER_PUID}
+      - PGID=${USER_PGID}
+      - TZ=${TIMEZONE}
+      - UMASK=002
+    volumes:
+      - ${TBOX_CONFIG}/tools/nginx-proxy-manager:/data
+      - ${TBOX_CONFIG}/tools/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+
   traefik:
     image: "traefik:v2.2"
     container_name: "traefik"
@@ -441,4 +460,3 @@ services:
       - 8123:8123
     restart: unless-stopped
     privileged: true
-
