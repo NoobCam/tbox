@@ -60,6 +60,8 @@ services:
       - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=127.0.0.1, 172.16.1.148"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
