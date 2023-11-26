@@ -26,6 +26,7 @@ services:
       - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
       - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
       - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+      - "traefik.http.middlewares.lan-whitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
       # Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
@@ -62,7 +63,7 @@ services:
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
       # Traefik - ipwhitelist
       - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.sabnzbd.middlewares=sabnzbd-ipwhitelist@docker"
+      - "traefik.http.routers.sabnzbd.middlewares=lan-whitelist@docker"
     environment:
       - PUID=${USER_PUID}
       - PGID=${USER_PGID}
