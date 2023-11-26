@@ -27,6 +27,7 @@ services:
       - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
       - "traefik.http.routers.httpsonly.middlewares=httpsonly"
       - "traefik.http.middlewares.lan-whitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.middlewares.wg-whitelist.ipwhitelist.sourcerange=${IPWL_WG}"
       # Dashboard
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=dashboard@internal"
@@ -62,7 +63,6 @@ services:
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
       # Traefik - ipwhitelist
-      #- "traefik.http.middlewares.sabnzbd-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
       - "traefik.http.routers.sabnzbd.middlewares=lan-whitelist@docker"
     environment:
       - PUID=${USER_PUID}
@@ -93,8 +93,7 @@ services:
       - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.radarr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.radarr.middlewares=radarr-ipwhitelist@docker"      
+      - "traefik.http.routers.radarr.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -130,8 +129,7 @@ services:
       - "traefik.http.routers.sonarr.service=sonarr"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.sonarr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.sonarr.middlewares=sonarr-ipwhitelist@docker"
+      - "traefik.http.routers.sonarr.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -166,8 +164,7 @@ services:
       - "traefik.http.routers.sonarr-anime.service=sonarr-anime"
       - "traefik.http.services.sonarr-anime.loadbalancer.server.port=8998"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.sonarr-anime-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.sonarr-anime.middlewares=sonarr-anime-ipwhitelist@docker"
+      - "traefik.http.routers.sonarr.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -202,8 +199,7 @@ services:
       - "traefik.http.routers.readarr.service=readarr"
       - "traefik.http.services.readarr.loadbalancer.server.port=8787"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.readarr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.radarr.middlewares=readarr-ipwhitelist@docker"
+      - "traefik.http.routers.readarr.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -238,8 +234,7 @@ services:
       - "traefik.http.routers.prowlarr.service=prowlarr"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.prowlarr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.prowlarr.middlewares=prowlarr-ipwhitelist@docker"
+      - "traefik.http.routers.prowlarr.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -269,8 +264,7 @@ services:
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.jellyfin-ipwhitelist.ipwhitelist.sourcerange=${IPWL_WG}"
-      - "traefik.http.routers.jellyfin.middlewares=jellyfin-ipwhitelist@docker"
+      - "traefik.http.routers.jellyfin.middlewares=wg-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -302,8 +296,7 @@ services:
       - "traefik.http.routers.jellyseerr.service=jellyseerr"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.jellyseerr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_WG}"
-      - "traefik.http.routers.jellyseerr.middlewares=jellyseerr-ipwhitelist@docker"
+      - "traefik.http.routers.jellyseer.middlewares=wg-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -330,8 +323,7 @@ services:
       - "traefik.http.routers.kavita.service=kavita"
       - "traefik.http.services.kavita.loadbalancer.server.port=5000"
         # Traefik - ipwhitelist
-      - "traefik.http.middlewares.kavita-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.kavita.middlewares=kavita-ipwhitelist@docker"        
+      - "traefik.http.routers.kavita.middlewares=wg-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -360,8 +352,7 @@ services:
       - "traefik.http.routers.homarr.service=homarr"
       - "traefik.http.services.homarr.loadbalancer.server.port=7575"
         # Traefik - ipwhitelist
-      - "traefik.http.middlewares.homarr-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.homarr.middlewares=homarr-ipwhitelist@docker"
+      - "traefik.http.routers.homarr.middlewares=lan-whitelist@docker"
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
@@ -385,8 +376,7 @@ services:
       - "traefik.http.routers.homeassistant.service=homeassistant"
       - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
       # Traefik - ipwhitelist
-      - "traefik.http.middlewares.homeassistant-ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
-      - "traefik.http.routers.homeassistant.middlewares=homeassistant-ipwhitelist@docker"
+      - "traefik.http.routers.homeassistant.middlewares=lan-whitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
