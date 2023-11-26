@@ -60,6 +60,7 @@ services:
       - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
       - "traefik.http.routers.sabnzbd.service=sabnzbd"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+      # Traefik - ipwhitelist
       - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
       - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
@@ -90,6 +91,9 @@ services:
       - "traefik.http.routers.radarr.rule=Host(`movies.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.radarr.service=radarr"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"      
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -124,6 +128,9 @@ services:
       - "traefik.http.routers.sonarr.rule=Host(`tv.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
       - "traefik.http.routers.sonarr.service=sonarr"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -157,6 +164,9 @@ services:
       - "traefik.http.routers.sonarr-anime.rule=Host(`anime.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
       - "traefik.http.routers.sonarr-anime.service=sonarr-anime"
       - "traefik.http.services.sonarr-anime.loadbalancer.server.port=8998"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -190,6 +200,9 @@ services:
       - "traefik.http.routers.readarr.rule=Host(`readarr.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.readarr.service=readarr"
       - "traefik.http.services.readarr.loadbalancer.server.port=8787"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -223,6 +236,9 @@ services:
       - "traefik.http.routers.prowlarr.rule=Host(`indexer.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.prowlarr.service=prowlarr"
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -251,6 +267,9 @@ services:
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.jellyfin.service=jellyfin"
       - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_WG}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -281,6 +300,9 @@ services:
       - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${TBOX_DOMAIN}`)"
       - "traefik.http.routers.jellyseerr.service=jellyseerr"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_WG}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -297,15 +319,18 @@ services:
     image: jvmilazz0/kavita:latest    # Using the stable branch from the offical repo.
     container_name: kavita
     labels:
-    # Enable automatic update with Watchtower
-    - "com.centurylinklabs.watchtower.enable=true"
-    # Traefik
-    - "traefik.enable=true"
-    - "traefik.http.routers.kavita.tls=true"
-    - "traefik.http.routers.kavita.tls.certresolver=myresolver"
-    - "traefik.http.routers.kavita.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-    - "traefik.http.routers.kavita.service=kavita"
-    - "traefik.http.services.kavita.loadbalancer.server.port=5000"        
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.kavita.tls=true"
+      - "traefik.http.routers.kavita.tls.certresolver=myresolver"
+      - "traefik.http.routers.kavita.rule=Host(`kavita.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.kavita.service=kavita"
+      - "traefik.http.services.kavita.loadbalancer.server.port=5000"
+        # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"        
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
@@ -324,15 +349,18 @@ services:
     container_name: homarr
     image: ghcr.io/ajnart/homarr:latest
     labels:
-    # Enable automatic update with Watchtower
-    - "com.centurylinklabs.watchtower.enable=true"
-    # Traefik
-    - "traefik.enable=true"
-    - "traefik.http.routers.homarr.tls=true"
-    - "traefik.http.routers.homarr.tls.certresolver=myresolver"
-    - "traefik.http.routers.homarr.rule=Host(`homarr.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-    - "traefik.http.routers.homarr.service=homarr"
-    - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.tls=true"
+      - "traefik.http.routers.homarr.tls.certresolver=myresolver"
+      - "traefik.http.routers.homarr.rule=Host(`homarr.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.homarr.service=homarr"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"
+        # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
@@ -346,15 +374,18 @@ services:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
     labels:
-    # Enable automatic update with Watchtower
-    - "com.centurylinklabs.watchtower.enable=true"
-    # Traefik
-    - "traefik.enable=true"
-    - "traefik.http.routers.homeassistant.tls=true"
-    - "traefik.http.routers.homeassistant.tls.certresolver=myresolver"
-    - "traefik.http.routers.homeassistant.rule=Host(`ha.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
-    - "traefik.http.routers.homeassistant.service=homeassistant"
-    - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      # Enable automatic update with Watchtower
+      - "com.centurylinklabs.watchtower.enable=true"
+      # Traefik
+      - "traefik.enable=true"
+      - "traefik.http.routers.homeassistant.tls=true"
+      - "traefik.http.routers.homeassistant.tls.certresolver=myresolver"
+      - "traefik.http.routers.homeassistant.rule=Host(`ha.${TBOX_DOMAIN}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.homeassistant.service=homeassistant"
+      - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+      # Traefik - ipwhitelist
+      - "traefik.http.middlewares.ipwhitelist.ipwhitelist.sourcerange=${IPWL_ALL}"
+      - "traefik.http.routers.sabnzbd.middlewares=ipwhitelist@docker"
     environment:
       # User from docker host to impersonate in container (configured in .env file)
       - PUID=${USER_PUID}
