@@ -21,51 +21,51 @@ services:
       - ${TBOX_CONFIG}/tools/nginx-proxy-manager:/data
       - ${TBOX_CONFIG}/tools/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
 
-  traefik:
-    image: "traefik:v2.2"
-    container_name: "traefik"
-    command:
-      # - "--log.level=DEBUG"
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # Let's Encrypt - wildcard - Namecheap
-      - --entrypoints.websecure.http.tls.domains[0].main=${TBOX_DOMAIN}
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.${TBOX_DOMAIN}
-      - --entrypoints.websecure.http.tls.certresolver=myresolver
-      - --certificatesresolvers.myresolver.acme.dnschallenge=true
-      - --certificatesresolvers.myresolver.acme.dnschallenge.disablepropagationcheck=true
-      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=${DNS_PROVIDER}
-      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-    labels:
-      # Middleware
-      - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
-      - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
-      - "traefik.http.routers.httpsonly.middlewares=httpsonly"
-      # Dashboard
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
-      - "traefik.http.routers.dashboard.service=dashboard@internal"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
-      # API
-      - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.tls=true"
-      - "traefik.http.routers.api.tls.certresolver=myresolver"
+  # traefik:
+  #   image: "traefik:v2.2"
+  #   container_name: "traefik"
+  #   command:
+  #     # - "--log.level=DEBUG"
+  #     - "--api.dashboard=true"
+  #     - "--providers.docker=true"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--entrypoints.websecure.address=:443"
+  #     # Let's Encrypt - wildcard - Namecheap
+  #     - --entrypoints.websecure.http.tls.domains[0].main=${TBOX_DOMAIN}
+  #     - --entrypoints.websecure.http.tls.domains[0].sans=*.${TBOX_DOMAIN}
+  #     - --entrypoints.websecure.http.tls.certresolver=myresolver
+  #     - --certificatesresolvers.myresolver.acme.dnschallenge=true
+  #     - --certificatesresolvers.myresolver.acme.dnschallenge.disablepropagationcheck=true
+  #     - --certificatesresolvers.myresolver.acme.dnschallenge.provider=${DNS_PROVIDER}
+  #     - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}
+  #     - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+  #   labels:
+  #     # Middleware
+  #     - "traefik.http.middlewares.httpsonly.redirectscheme.scheme=https"
+  #     - "traefik.http.middlewares.httpsonly.redirectscheme.permanent=true"
+  #     - "traefik.http.routers.httpsonly.rule=HostRegexp(`{any:.*}`)"
+  #     - "traefik.http.routers.httpsonly.middlewares=httpsonly"
+  #     # Dashboard
+  #     - "traefik.http.routers.dashboard.rule=Host(`traefik.${TBOX_DOMAIN}`)"
+  #     - "traefik.http.routers.dashboard.service=dashboard@internal"
+  #     - "traefik.http.routers.dashboard.tls=true"
+  #     - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+  #     # API
+  #     - "traefik.http.routers.api.rule=Host(`traefik.${TBOX_DOMAIN}`) && PathPrefix(`/api`)"
+  #     - "traefik.http.routers.api.service=api@internal"
+  #     - "traefik.http.routers.api.tls=true"
+  #     - "traefik.http.routers.api.tls.certresolver=myresolver"
 
-    environment:
-      - "NAMECHEAP_API_USER=${NAMECHEAP_API_USER}"
-      - "NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
-    restart: unless-stopped
+  #   environment:
+  #     - "NAMECHEAP_API_USER=${NAMECHEAP_API_USER}"
+  #     - "NAMECHEAP_API_KEY=${NAMECHEAP_API_KEY}"
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     - ${TBOX_CONFIG}/tools/traefik:/letsencrypt
+  #   restart: unless-stopped
     
   # gluetun:
   #   image: qmcgaw/gluetun
